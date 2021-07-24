@@ -1,5 +1,7 @@
 import firebase from "firebase/app";
 import "firebase/auth";
+import "firebase/database";
+
 const firebaseConfig = {
     apiKey: "AIzaSyBm_7gKwfcky8xOu0yJbjbBbOUghjstJ48",
     authDomain: "nwitter-72c5e.firebaseapp.com",
