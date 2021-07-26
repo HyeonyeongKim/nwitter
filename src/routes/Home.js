@@ -1,9 +1,16 @@
+import { dbService } from "myFirebase";
 import React, {useState} from "react";
 
 const Home = () => {
     const [nweet, setNweet] = useState("");
-    const onSubmit = e => {
+    //Whenever we submit, we create a document.
+    const onSubmit = async(e) => {
         e.preventDefault();
+        await dbService.collection("nweets").add({      //this returns a promise and async/await required.
+            nweet,
+            createdAt: Date.now()
+        });
+        setNweet(""); //데이터 저장 후 칸 비우기
     };
     const onChange = e => {
         const {
