@@ -6,12 +6,13 @@ import {authService} from "myFirebase";
 function App() {
   const [init, setInit] = useState(false);
   const [isLoggedIn, setIsLoggedIn ] = useState(authService.currentUser);
+  const [userObj, setUserObj] = useState(null);
   // Auth의 메소드 중 currentUser : The currently signed-in user (or null)
   useEffect( () => {
     authService.onAuthStateChanged( (user) => {
       if(user){
         setIsLoggedIn(true);
-        setInit(true);
+        setUserObj(user);
       }else{
         setIsLoggedIn(false);
       }
@@ -21,7 +22,7 @@ function App() {
 
   return (
     <>
-      {init ? <AppRouter isLoggedIn = {isLoggedIn} /> : "Initializing..."}
+      {init ? <AppRouter isLoggedIn = {isLoggedIn} userObj = {userObj} /> : "Initializing..."}
       <footer> &copy; Nwitter {new Date().getFullYear()}</footer>
     
     </>
