@@ -47,6 +47,7 @@ const Nweet = ({nweetObj, isOwner}) => {
             ):(
                 <>
                      <h4> {nweetObj.text}</h4>
+                     {nweetObj.attachmentUrl && <img src = {nweetObj.attachmentUrl} width="50px" height = "50px" />}
                     {/* 본인이 작성한 트윗에만 버튼이 보이도록 */}
                     {isOwner && (
                     <>

@@ -1,12 +1,13 @@
 import Nweet from "components/Nweets";
-import { dbService } from "myFirebase";
+import { dbService, storageService } from "myFirebase";
 import React, {useEffect, useState} from "react";
+import { v4 as uuidv4 } from 'uuid';
 
 const Home = ({userObj}) => {
     //console.log(userObj)
     const [nweet, setNweet] = useState("");
     const [nweets, setNweets] = useState([]);
-    const [attachment, setAttachment] = useState();
+    const [attachment, setAttachment] = useState(); // 파일 업로드의 경우 storage에 먼저 업로드 한 후 그걸 다시 다운로드해서 nweet 했을 때 db에 저장되도록 함
 
     //mount될 때 트윗 목록 가져오기
     useEffect( () => {
@@ -25,13 +26,23 @@ const Home = ({userObj}) => {
     //Whenever we submit, we create a document.
     const onSubmit = async(e) => {
         e.preventDefault();
-        await dbService.collection("nweets").add({      //this returns a promise and async/await required. 
+        // create a folder
+        let attachmentUrl = "" // attachment가 있을 때와 없을 때를 if문으로 나눠야 하는데 attachmentUrl은 어느 경우든 있어야 하니까 if문의 scope 안에 들어가지 않게 밖으로 뺐음
+        if(attachment !== ""){
+            const attachmentRef = storageService.ref().child(`${userObj.uid}/${uuidv4()}`); // userObj.uid 즉 유저 id로 storage에 폴더 생성하고 uuid로 파일 이름
+            const response = await attachmentRef.putString(attachment, "data_url");
+            attachmentUrl = await response.ref.getDownloadURL();
+        }
+
+       const nweetObj = {
             text: nweet,
             createdAt: Date.now(),
-            creatorId: userObj.uid
-        });
-        
-        setNweet(""); //데이터 저장 후 칸 비우기
+            creatorId: userObj.uid,
+            attachmentUrl
+       }
+       await dbService.collection("nweets").add(nweetObj)    
+       setNweet(""); //데이터 저장 후 칸 비우기
+       setAttachment("")
     };
     
     const onChange = e => {
